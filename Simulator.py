@@ -5,8 +5,8 @@ import numpy as np
 
 class Simulator:
 
-	def __init__(self, objects={}):
-		self.id = p.connect(p.GUI)
+	def __init__(self, physicsid=0, objects={}):
+		self.id = physicsid
 		self.debug_names = {}
 		self.objects = objects
 		self.time = 0

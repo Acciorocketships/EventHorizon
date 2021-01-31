@@ -28,5 +28,7 @@ class Agent(Object):
 
 
 	def set_movement(self, movement=[0,0]):
+		if self.obj_time == self.sim.time:
+			return
 		torque = torch.tensor([-movement[1], movement[0], 0]) * Agent.MOVETORQUE
 		self.set_torque(torque=torque)
