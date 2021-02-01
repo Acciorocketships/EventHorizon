@@ -1,6 +1,8 @@
 from Simulator import Simulator
 from Network import Network
+from Camera import Camera
 import time
+import torch
 
 class PlayerServer:
 
@@ -16,7 +18,9 @@ class PlayerServer:
 		if self.remote:
 			self.network = Network(host=serverhost, port=PlayerServer.SERVER_PORT, otherhost=clienthost, otherport=PlayerServer.CLIENT_PORT)
 			self.network.dataCallback = {"input" : self.update_input}
+		# Logic
 		self.agent = agent
+		self.camera = Camera(self.agent)
 
 
 	# called by GameServer
@@ -25,17 +29,22 @@ class PlayerServer:
 		if not self.remote:
 			self.input = self.playerclient.input # use input from playerclient object (input is automatically populated for remote)
 		# Input Logic
+		# R = self.camera.agent_orientation()
+		R = torch.eye(3)
+		movement = self.input.get("movement", torch.zeros(3))
+		self.agent.set_movement(movement=movement, orientation=R)
+		# print(movement)
 
 
 	# called by GameServer
 	def get_output(self):
 		# Output Logic
-		output = None
+		# self.output['img'] = self.camera.get_image()
 		# Store in PlayerClient
 		if self.remote:
-			self.network.send(var=output, name="output")
+			self.network.send(var=self.output, name="output")
 		else:
-			self.playerclient.output = output
+			self.playerclient.output = self.output
 
 
 	def update_input(self, data):

@@ -24,11 +24,10 @@ class Agent(Object):
 		self.uid = uid
 		self.set_state(pos=pos)
 		p.changeDynamics(self.uid, linkIndex=-1, restitution=Agent.BOUNCE, lateralFriction=Agent.FRICTION, spinningFriction=-Agent.FRICTION, rollingFriction=Agent.ROLLING_FRICTION, physicsClientId=self.sim.id)
-		# print(p.getDynamicsInfo(self.uid, -1, self.sim.id))
 
 
-	def set_movement(self, movement=[0,0]):
+	def set_movement(self, movement=[0,0], orientation=torch.eye(3)):
 		if self.obj_time == self.sim.time:
 			return
-		torque = torch.tensor([-movement[1], movement[0], 0]) * Agent.MOVETORQUE
+		torque = (orientation @ torch.tensor([-movement[1], movement[0], 0])) * Agent.MOVETORQUE
 		self.set_torque(torque=torque)
